@@ -116,55 +116,162 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Preview card */}
-            <div className="relative mt-24 max-w-3xl mx-auto [animation:fadeSlideIn_0.5s_ease-in-out_0.6s_both]">
-              <div className="mx-auto rounded-[28px] bg-neutral-900/50 backdrop-blur-xl shadow-[0_20px_120px_-20px_rgba(0,0,0,0.7)] border border-white/5 border-gradient before:rounded-[28px]">
-                <div className="flex items-start justify-between border-b border-white/5 px-4 py-3 sm:px-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex gap-2">
-                      <span className="h-3.5 w-3.5 rounded-full bg-red-500/90"></span>
-                      <span className="h-3.5 w-3.5 rounded-full bg-amber-400/90"></span>
-                      <span className="h-3.5 w-3.5 rounded-full bg-emerald-500/90"></span>
-                    </div>
-                    <div className="inline-flex items-baseline gap-2">
-                      <span className="text-xl font-semibold tracking-tight text-white">RupeeRebel</span>
-                      <span className="text-xs text-white/40">Plan Preview</span>
-                    </div>
-                  </div>
-                </div>
+          </div>
+        </section>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-6">
-                  <div className="rounded-xl bg-white/5 backdrop-blur-sm p-4 border border-white/10 border-gradient before:rounded-xl">
-                    <p className="text-xs uppercase tracking-wider text-slate-400">Total debt</p>
-                    <p className="mt-2 text-2xl font-semibold text-white tracking-tighter">₹3,20,000</p>
-                    <p className="mt-1 text-xs text-slate-500">across 5 accounts</p>
-                  </div>
+        {/* How we help you become debt free */}
+        <section className="relative z-10 mt-24 px-6 lg:px-8">
+          <div className="mx-auto max-w-5xl text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border-gradient before:rounded-full bg-white/5 px-3 py-1.5 backdrop-blur">
+              <span className="text-xs text-white/70">How we help you become debt free</span>
+            </div>
 
-                  <div className="rounded-xl bg-white/5 backdrop-blur-sm p-4 border border-white/10 border-gradient before:rounded-xl">
-                    <p className="text-xs uppercase tracking-wider text-slate-400">Monthly plan</p>
-                    <p className="mt-2 text-2xl font-semibold text-white tracking-tighter">₹14,500</p>
-                    <p className="mt-1 text-xs text-slate-500">what you'll pay total per month</p>
-                  </div>
+            <h2 className="mt-6 text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
+              A plan built around you — not your bank
+            </h2>
 
-                  <div className="rounded-xl bg-white/5 backdrop-blur-sm p-4 border border-white/10 border-gradient before:rounded-xl">
-                    <p className="text-xs uppercase tracking-wider text-slate-400">Debt-free target</p>
-                    <p className="mt-2 text-2xl font-semibold text-white tracking-tighter">Mar 2029</p>
-                    <div className="mt-3">
-                      <div className="w-full bg-white/10 rounded-full h-1.5">
-                        <div
-                          className="bg-gradient-to-r from-orange-300 to-white h-1.5 rounded-full"
-                          style={{ width: "62%" }}
-                        ></div>
-                      </div>
-                      <p className="mt-1 text-xs text-white/70">62% to freedom</p>
-                    </div>
-                  </div>
-                </div>
+            <p className="mt-4 text-white/70 text-base md:text-lg max-w-xl mx-auto">
+              Three steps. No judgment. Just a path out and someone on your side.
+            </p>
 
-                <div className="px-6 pb-6 text-xs text-slate-400">
-                  "We'll show you which debt to attack first, and exactly when you could be free."
+            <div className="mt-10 grid gap-4 sm:grid-cols-3 text-left">
+              {/* Card 1 */}
+              <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4">
+                <p className="text-xs text-white/60 uppercase tracking-wider">1. Who are you?</p>
+                <p className="text-white text-sm font-semibold tracking-tight mt-2">
+                  Answer a few questions about your situation and let's compare you to the situation of others.
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4">
+                <p className="text-xs text-white/60 uppercase tracking-wider">2. Your free debt dashboard and repayment action plan</p>
+                <p className="text-white text-sm font-semibold tracking-tight mt-2">
+                  We will provide you with a smart and manageable repayment action plan.
+                </p>
+              </div>
+
+              {/* Card 3 */}
+              <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4">
+                <p className="text-xs text-white/60 uppercase tracking-wider">3. All debt into one repayment</p>
+                <p className="text-white text-sm font-semibold tracking-tight mt-2">
+                  Let us check if you are eligible for a cheaper consolidation loan altogether.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Dashboard preview card */}
+        <section className="relative z-10 mt-24 px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto [animation:fadeSlideIn_0.5s_ease-in-out_0.6s_both]">
+            <div className="mx-auto rounded-[28px] bg-neutral-900/50 backdrop-blur-xl shadow-[0_20px_120px_-20px_rgba(0,0,0,0.7)] border border-white/5 border-gradient before:rounded-[28px]">
+              <div className="flex items-start justify-between border-b border-white/5 px-4 py-3 sm:px-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-2">
+                    <span className="h-3.5 w-3.5 rounded-full bg-red-500/90"></span>
+                    <span className="h-3.5 w-3.5 rounded-full bg-amber-400/90"></span>
+                    <span className="h-3.5 w-3.5 rounded-full bg-emerald-500/90"></span>
+                  </div>
+                  <div className="inline-flex items-baseline gap-2">
+                    <span className="text-xl font-semibold tracking-tight text-white">RupeeRebel</span>
+                    <span className="text-xs text-white/40">Plan Preview</span>
+                  </div>
                 </div>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-6">
+                <div className="rounded-xl bg-white/5 backdrop-blur-sm p-4 border border-white/10 border-gradient before:rounded-xl">
+                  <p className="text-xs uppercase tracking-wider text-slate-400">Total debt</p>
+                  <p className="mt-2 text-2xl font-semibold text-white tracking-tighter">₹3,20,000</p>
+                  <p className="mt-1 text-xs text-slate-500">across 5 accounts</p>
+                </div>
+
+                <div className="rounded-xl bg-white/5 backdrop-blur-sm p-4 border border-white/10 border-gradient before:rounded-xl">
+                  <p className="text-xs uppercase tracking-wider text-slate-400">Monthly plan</p>
+                  <p className="mt-2 text-2xl font-semibold text-white tracking-tighter">₹14,500</p>
+                  <p className="mt-1 text-xs text-slate-500">what you'll pay total per month</p>
+                </div>
+
+                <div className="rounded-xl bg-white/5 backdrop-blur-sm p-4 border border-white/10 border-gradient before:rounded-xl">
+                  <p className="text-xs uppercase tracking-wider text-slate-400">Debt-free target</p>
+                  <p className="mt-2 text-2xl font-semibold text-white tracking-tighter">Mar 2029</p>
+                  <div className="mt-3">
+                    <div className="w-full bg-white/10 rounded-full h-1.5">
+                      <div
+                        className="bg-gradient-to-r from-orange-300 to-white h-1.5 rounded-full"
+                        style={{ width: "62%" }}
+                      ></div>
+                    </div>
+                    <p className="mt-1 text-xs text-white/70">62% to freedom</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 pb-6 text-xs text-slate-400">
+                "We'll show you which debt to attack first, and exactly when you could be free."
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Resources */}
+        <section className="relative z-10 mt-24 px-6 lg:px-8">
+          <div className="mx-auto max-w-5xl text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border-gradient before:rounded-full bg-white/5 px-3 py-1.5 backdrop-blur">
+              <span className="text-xs text-white/70">Resources</span>
+            </div>
+
+            <h2 className="mt-6 text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
+              Learn how to break free from debt
+            </h2>
+
+            <p className="mt-4 text-white/70 text-base md:text-lg max-w-xl mx-auto">
+              No jargon. Just clear answers to the stuff nobody teaches you.
+            </p>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-3 text-left">
+              {/* Blog 1 */}
+              <article className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4 flex flex-col">
+                <p className="text-xs text-white/60 uppercase tracking-wider">Guide</p>
+                <h3 className="text-white text-sm font-semibold tracking-tight mt-2">
+                  The truth about minimum payments
+                </h3>
+                <p className="text-white/60 text-xs mt-2">
+                  Why paying "just the minimum" keeps you in debt longer than you think — and how to flip it.
+                </p>
+                <a href="#" className="mt-4 text-[11px] text-white/70 hover:text-white underline underline-offset-2 decoration-white/30">
+                  Read more →
+                </a>
+              </article>
+
+              {/* Blog 2 */}
+              <article className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4 flex flex-col">
+                <p className="text-xs text-white/60 uppercase tracking-wider">Playbook</p>
+                <h3 className="text-white text-sm font-semibold tracking-tight mt-2">
+                  Avalanche vs Snowball: which is right for you?
+                </h3>
+                <p className="text-white/60 text-xs mt-2">
+                  Two payoff strategies. One saves you more money. One keeps you more motivated. Here's how to choose.
+                </p>
+                <a href="#" className="mt-4 text-[11px] text-white/70 hover:text-white underline underline-offset-2 decoration-white/30">
+                  Read more →
+                </a>
+              </article>
+
+              {/* Blog 3 */}
+              <article className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4 flex flex-col">
+                <p className="text-xs text-white/60 uppercase tracking-wider">Option</p>
+                <h3 className="text-white text-sm font-semibold tracking-tight mt-2">
+                  What is a consolidation loan?
+                </h3>
+                <p className="text-white/60 text-xs mt-2">
+                  How rolling multiple debts into one payment can lower stress — and when it's actually a bad idea.
+                </p>
+                <a href="#" className="mt-4 text-[11px] text-white/70 hover:text-white underline underline-offset-2 decoration-white/30">
+                  Read more →
+                </a>
+              </article>
             </div>
           </div>
         </section>
