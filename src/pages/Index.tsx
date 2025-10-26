@@ -35,14 +35,16 @@ const Index = () => {
 
   return (
     <div className="h-full">
-      {/* Background image */}
-      <div
-        className="absolute top-0 w-full -z-10 h-screen bg-cover bg-center opacity-60"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=1920&q=80')",
-        }}
-      />
+      {/* Full-page blurred background */}
+      <div className="absolute inset-0 -z-10 h-screen w-full">
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+        <img
+          src="/pexels-chahat-sagar-3091165-4755123.jpg"
+          alt="RupeeRebel background"
+          className="w-full h-full object-cover blur-2xl scale-105 opacity-70"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-700/20 via-orange-600/10 to-black/60 mix-blend-overlay -z-10"></div>
+      </div>
 
       {/* Stacked blur gradient */}
       <div className="gradient-blur pointer-events-none fixed inset-x-0 bottom-0 top-auto h-[65%] z-10">
