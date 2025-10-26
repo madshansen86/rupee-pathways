@@ -63,7 +63,13 @@ const Index = () => {
         <header className="relative z-20 [animation:fadeSlideIn_0.5s_ease-in-out_0.1s_both]">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="flex items-center justify-between border-b border-white/10 pt-6 pb-6">
-              <div className="text-white font-semibold text-lg tracking-tight">RupeeRebel</div>
+              <div className="flex items-center">
+                <img
+                  src="/ChatGPT Image Oct 26, 2025, 05_59_59 AM.png"
+                  alt="RupeeRebel logo"
+                  className="h-12 w-auto"
+                />
+              </div>
               <div className="flex items-center gap-3">
                 <Link
                   to="#"
@@ -107,10 +113,7 @@ const Index = () => {
                 </label>
 
                 <button className="cta-button" type="submit">
-                  <span>
-                    Let's get started
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
+                  <span>Let's get started →</span>
                 </button>
               </form>
 
@@ -123,18 +126,18 @@ const Index = () => {
         </section>
 
         {/* How we help you become debt free */}
-        <section className="relative z-10 mt-24 px-6 lg:px-8">
+        <section className="relative z-10 mt-32 px-6 lg:px-8">
           <div className="mx-auto max-w-5xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border-gradient before:rounded-full bg-white/5 px-3 py-1.5 backdrop-blur">
               <span className="text-xs text-white/70">How we help you become debt free</span>
             </div>
 
-            <h2 className="mt-6 text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
-              A plan built around you — not your bank
+            <h2 className="mt-8 text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
+              Take a quick test and get a free actionable plan to become debt free
             </h2>
 
             <p className="mt-4 text-white/70 text-base md:text-lg max-w-xl mx-auto">
-              Three steps. No judgment. Just a path out and someone on your side.
+              By following three simple steps we can help you become debt free and secure you a smaller monthly repayment.
             </p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3 text-left">
