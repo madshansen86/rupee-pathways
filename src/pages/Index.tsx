@@ -129,7 +129,7 @@ const Index = () => {
               <span className="text-xs text-white/70">How we help you become debt free</span>
             </div>
 
-            <h2 className="mt-8 text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
+            <h2 className="mt-[52px] text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
               Take a quick test and get a free actionable plan to become debt free
             </h2>
 
