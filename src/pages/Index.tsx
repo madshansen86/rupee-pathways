@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import backgroundImage from "@/assets/pexels-chahat-sagar-3091165-4755123.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -40,7 +39,7 @@ const Index = () => {
       <div className="absolute inset-0 -z-10 h-screen w-full">
         <div className="absolute inset-0 bg-black/40 z-10"></div>
         <img
-          src={backgroundImage}
+          src="/pexels-chahat-sagar-3091165-4755123.jpg"
           alt="RupeeRebel background"
           className="w-full h-full object-cover blur-2xl scale-105 opacity-70"
         />
