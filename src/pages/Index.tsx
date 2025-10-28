@@ -38,9 +38,9 @@ const Index = () => {
       {/* Full-page blurred background */}
       <div className="absolute inset-0 -z-10 h-screen w-full">
         <img
-          src="/pexels-chahat-sagar-3091165-4755123.jpg"
+          src="/background.jpg"
           alt="RupeeRebel background"
-          className="w-full h-full object-cover blur-2xl scale-105 opacity-70"
+          className="w-full h-full object-cover blur-sm scale-105 opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-700/20 via-orange-600/10 to-black/60 mix-blend-overlay"></div>
         <div className="absolute inset-0 bg-black/40"></div>
