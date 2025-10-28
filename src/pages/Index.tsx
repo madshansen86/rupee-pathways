@@ -123,7 +123,7 @@ const Index = () => {
         </section>
 
         {/* How we help you become debt free */}
-        <section className="relative z-10 mt-[40px] px-6 lg:px-8">
+        <section className="relative z-10 mt-40 px-6 lg:px-8">
           <div className="mx-auto max-w-5xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border-gradient before:rounded-full bg-white/5 px-3 py-1.5 backdrop-blur">
               <span className="text-xs text-white/70">How we help you become debt free</span>
