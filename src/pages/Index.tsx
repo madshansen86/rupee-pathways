@@ -86,15 +86,13 @@ const Index = () => {
           <div className="mx-auto max-w-7xl px-6 lg:px-8 mt-24">
             <div className="text-center max-w-4xl mx-auto">
               <h1 className="font-semibold tracking-tighter text-white drop-shadow-xl leading-[1.05] text-4xl sm:text-5xl md:text-6xl lg:text-7xl [animation:fadeSlideIn_0.5s_ease-in-out_0.2s_both]">
-                Take your life back
-                <br className="hidden sm:block" />
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-white">
-                  from debt.
+                  Rebel against your debt
                 </span>
               </h1>
 
               <p className="max-w-2xl mx-auto text-base md:text-lg text-white/70 mt-6 [animation:fadeSlideIn_0.5s_ease-in-out_0.3s_both]">
-                Build your personalised debt freedom plan. One monthly path. Less stress. More control.
+                Take a 2-minute test to reveal your personalised plan to become debt-free.
               </p>
 
               <form
@@ -112,7 +110,7 @@ const Index = () => {
                 </label>
 
                 <button className="cta-button" type="submit">
-                  <span>Let's get started →</span>
+                  <span>Get your free plan</span>
                 </button>
               </form>
 
