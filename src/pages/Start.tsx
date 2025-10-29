@@ -67,9 +67,8 @@ const Start = () => {
       <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center">
         {/* Left: Logo */}
         <div className="flex items-center">
-          {/* If you have an <img src="...logo.svg" /> on landing header, reuse it here */}
           <img
-            src="/logo-rupeerebel.svg"
+            src="/logo-rr.svg"
             alt="RupeeRebel"
             className="h-8 w-auto"
           />

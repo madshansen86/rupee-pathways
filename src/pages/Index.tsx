@@ -62,8 +62,8 @@ const Index = () => {
             <div className="flex items-center justify-between border-b border-white/10 pt-6 pb-6">
               <div className="flex items-center">
                 <img
-                  src="/logo.png"
-                  alt="RupeeRebel logo"
+                  src="/logo-rr.svg"
+                  alt="RupeeRebel"
                   className="h-12 w-auto"
                 />
               </div>
