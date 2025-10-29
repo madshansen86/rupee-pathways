@@ -28,9 +28,7 @@ const Index = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email");
-    navigate(`/debt-plan?email=${encodeURIComponent(email as string)}`);
+    navigate('/start');
   };
 
   return (
@@ -166,7 +164,7 @@ const Index = () => {
             <div className="mt-8 flex flex-col items-center gap-3">
               <button
                 className="cta-button"
-                onClick={() => navigate('/debt-plan')}
+                onClick={() => navigate('/start')}
               >
                 <span>Start the quick test →</span>
               </button>
