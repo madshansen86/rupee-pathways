@@ -61,11 +61,13 @@ const Index = () => {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="flex items-center justify-between border-b border-white/10 pt-6 pb-6">
               <div className="flex items-center">
-                <img
-                  src="/logo-rr.svg"
-                  alt="RupeeRebel"
-                  className="h-12 w-auto md:h-14 transition-transform duration-200 hover:scale-105"
-                />
+                <Link to="/" className="flex items-center">
+                  <img
+                    src="/logo-rr.svg"
+                    alt="RupeeRebel"
+                    className="h-12 w-auto md:h-14 transition-transform duration-200 hover:scale-105"
+                  />
+                </Link>
               </div>
               <div className="flex items-center gap-3">
                 <Link

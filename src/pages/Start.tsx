@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const Start = () => {
@@ -67,11 +67,13 @@ const Start = () => {
       <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center">
         {/* Left: Logo */}
         <div className="flex items-center">
-          <img
-            src="/logo-rr.svg"
-            alt="RupeeRebel"
-            className="h-12 w-auto md:h-14 transition-transform duration-200 hover:scale-105"
-          />
+          <Link to="/" className="flex items-center">
+            <img
+              src="/logo-rr.svg"
+              alt="RupeeRebel"
+              className="h-12 w-auto md:h-14 transition-transform duration-200 hover:scale-105"
+            />
+          </Link>
         </div>
       </header>
 
