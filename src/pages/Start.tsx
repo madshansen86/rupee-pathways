@@ -16,9 +16,15 @@ const Start = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem("rr_email");
+    const savedEmail =
+      typeof window !== 'undefined'
+        ? window.localStorage.getItem('rr_email')
+        : null
     if (savedEmail) {
-      setFormData(prev => ({ ...prev, email: savedEmail }));
+      const emailField = document.getElementById('email') as HTMLInputElement | null
+      if (emailField) {
+        emailField.value = savedEmail
+      }
     }
   }, []);
 
@@ -112,23 +118,22 @@ const Start = () => {
                 </div>
 
                 {/* Question 2: Number of Lenders */}
-                <div className="flex flex-col gap-2 text-left text-white">
-                  <label htmlFor="numLenders" className="text-sm font-medium text-white">
+                <label className="flex flex-col gap-2 text-left text-white">
+                  <span className="text-sm font-medium text-white">
                     How many lenders are you paying each month?
-                  </label>
+                  </span>
                   <select
                     id="numLenders"
-                    className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
-                    value={formData.numLenders}
-                    onChange={(e) => setFormData({ ...formData, numLenders: e.target.value })}
                     required
+                    className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-orange-300/60"
+                    defaultValue=""
                   >
-                    <option value="" disabled className="bg-gray-900">Select...</option>
-                    <option value="1" className="bg-gray-900">1</option>
-                    <option value="2-3" className="bg-gray-900">2–3</option>
-                    <option value="4+" className="bg-gray-900">4+</option>
+                    <option value="" disabled>Select…</option>
+                    <option value="1">1</option>
+                    <option value="2-3">2–3</option>
+                    <option value="4+">4+</option>
                   </select>
-                </div>
+                </label>
 
                 {/* Question 3: Monthly Income */}
                 <div className="flex flex-col gap-2 text-left text-white">
@@ -150,77 +155,57 @@ const Start = () => {
                 </div>
 
                 {/* Question 4: Feeling (Radio Group) */}
-                <div className="flex flex-col gap-2 text-left text-white">
-                  <label className="text-sm font-medium text-white">
+                <fieldset className="flex flex-col gap-3 text-left text-white">
+                  <legend className="text-sm font-medium text-white mb-1">
                     How are you feeling about your debt right now?
+                  </legend>
+
+                  <label className="flex items-start gap-2 bg-white/5 rounded-lg border border-white/20 px-3 py-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="stressLevel"
+                      value="managing"
+                      required
+                      className="accent-orange-400 cursor-pointer mt-1"
+                    />
+                    <span className="text-sm text-white">I'm managing it</span>
                   </label>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/20 px-3 py-2">
-                      <input
-                        type="radio"
-                        id="managing"
-                        name="stressLevel"
-                        value="managing"
-                        className="mt-1 accent-orange-400"
-                        checked={formData.stressLevel === "managing"}
-                        onChange={(e) => setFormData({ ...formData, stressLevel: e.target.value })}
-                        required
-                      />
-                      <label htmlFor="managing" className="text-sm text-white cursor-pointer flex-1">
-                        I'm managing it
-                      </label>
-                    </div>
-                    <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/20 px-3 py-2">
-                      <input
-                        type="radio"
-                        id="stressed"
-                        name="stressLevel"
-                        value="stressed"
-                        className="mt-1 accent-orange-400"
-                        checked={formData.stressLevel === "stressed"}
-                        onChange={(e) => setFormData({ ...formData, stressLevel: e.target.value })}
-                        required
-                      />
-                      <label htmlFor="stressed" className="text-sm text-white cursor-pointer flex-1">
-                        I'm stressed about it
-                      </label>
-                    </div>
-                    <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/20 px-3 py-2">
-                      <input
-                        type="radio"
-                        id="urgent"
-                        name="stressLevel"
-                        value="urgent"
-                        className="mt-1 accent-orange-400"
-                        checked={formData.stressLevel === "urgent"}
-                        onChange={(e) => setFormData({ ...formData, stressLevel: e.target.value })}
-                        required
-                      />
-                      <label htmlFor="urgent" className="text-sm text-white cursor-pointer flex-1">
-                        It's urgent
-                      </label>
-                    </div>
-                  </div>
-                </div>
+
+                  <label className="flex items-start gap-2 bg-white/5 rounded-lg border border-white/20 px-3 py-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="stressLevel"
+                      value="stressed"
+                      className="accent-orange-400 cursor-pointer mt-1"
+                    />
+                    <span className="text-sm text-white">I'm stressed about it</span>
+                  </label>
+
+                  <label className="flex items-start gap-2 bg-white/5 rounded-lg border border-white/20 px-3 py-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="stressLevel"
+                      value="urgent"
+                      className="accent-orange-400 cursor-pointer mt-1"
+                    />
+                    <span className="text-sm text-white">It's urgent</span>
+                  </label>
+                </fieldset>
 
                 {/* Question 5: Email */}
-                <div className="flex flex-col gap-2 text-left text-white">
-                  <label htmlFor="email" className="text-sm font-medium text-white">
-                    Your email
-                  </label>
+                <label className="flex flex-col gap-2 text-left text-white">
+                  <span className="text-sm font-medium text-white">Your email</span>
                   <input
                     id="email"
                     type="email"
-                    className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                     placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
+                    className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                   />
-                  <p className="text-xs text-white/60">
+                  <span className="text-xs text-white/60">
                     We'll send your personalised plan to this email.
-                  </p>
-                </div>
+                  </span>
+                </label>
 
                 {/* Submit Button */}
                 <div className="pt-6">
