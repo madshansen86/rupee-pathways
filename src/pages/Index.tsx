@@ -126,41 +126,45 @@ const Index = () => {
         <section className="relative z-10 mt-40 px-6 lg:px-8">
           <div className="mx-auto max-w-5xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border-gradient before:rounded-full bg-white/5 px-3 py-1.5 backdrop-blur">
-              <span className="text-xs text-white/70">How we help you become debt free</span>
+              <span className="text-xs text-white/70">Your 3-step escape plan</span>
             </div>
-
-            <h2 className="mt-[68px] text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
-              Take a quick test and get a free actionable plan to become debt free
-            </h2>
-
-            <p className="mt-4 text-white/70 text-base md:text-lg max-w-xl mx-auto">
-              By following three simple steps we can help you become debt free and secure you a smaller monthly repayment.
-            </p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3 text-left">
               {/* Card 1 */}
               <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4">
-                <p className="text-xs text-white/60 uppercase tracking-wider">1. Who are you?</p>
+                <p className="text-xs text-white/60 uppercase tracking-wider">Tell us where you stand</p>
                 <p className="text-white text-sm font-semibold tracking-tight mt-2">
-                  Answer a few questions about your situation and let's compare you to the situation of others.
+                  Quick 1-minute survey to understand your debt situation.
                 </p>
               </div>
 
               {/* Card 2 */}
               <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4">
-                <p className="text-xs text-white/60 uppercase tracking-wider">2. Your free debt dashboard and repayment action plan</p>
+                <p className="text-xs text-white/60 uppercase tracking-wider">See your freedom score</p>
                 <p className="text-white text-sm font-semibold tracking-tight mt-2">
-                  We will provide you with a smart and manageable repayment action plan.
+                  We instantly show your smart repayment plan and how long freedom takes.
                 </p>
               </div>
 
               {/* Card 3 */}
               <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4">
-                <p className="text-xs text-white/60 uppercase tracking-wider">3. All debt into one repayment</p>
+                <p className="text-xs text-white/60 uppercase tracking-wider">Start your comeback</p>
                 <p className="text-white text-sm font-semibold tracking-tight mt-2">
-                  Let us check if you are eligible for a cheaper consolidation loan altogether.
+                  Get tools and loan options to cut your monthly costs.
                 </p>
               </div>
+            </div>
+
+            <div className="mt-8 flex flex-col items-center gap-3">
+              <button
+                className="cta-button"
+                onClick={() => navigate('/debt-plan')}
+              >
+                <span>Start the quick test →</span>
+              </button>
+              <p className="text-xs text-white/60">
+                No spam · No credit check
+              </p>
             </div>
           </div>
         </section>
