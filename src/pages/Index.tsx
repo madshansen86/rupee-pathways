@@ -129,6 +129,14 @@ const Index = () => {
               <span className="text-xs text-white/70">Your 3-step escape plan</span>
             </div>
 
+            <h2 className="mt-[68px] text-white text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter drop-shadow-xl">
+              Take a quick test and get a free actionable plan to become debt free
+            </h2>
+
+            <p className="mt-4 text-white/70 text-base md:text-lg max-w-xl mx-auto">
+              By following three simple steps we can help you become debt free and secure you a smaller monthly repayment.
+            </p>
+
             <div className="mt-10 grid gap-4 sm:grid-cols-3 text-left">
               {/* Card 1 */}
               <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 border-gradient before:rounded-xl p-4">
