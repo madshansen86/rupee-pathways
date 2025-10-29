@@ -54,6 +54,7 @@ const Start = () => {
       });
       setIsSubmitting(false);
     } else {
+      window.localStorage.setItem("rr_num_lenders", formData.numLenders);
       navigate("/debt-plan");
     }
   };
@@ -128,22 +129,23 @@ const Start = () => {
             >
               How many lenders are you paying each month?
             </label>
-            <select
-              id="numLenders"
-              required
-              className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-orange-300/60"
-              value={formData.numLenders}
-              onChange={(e) =>
-                setFormData({ ...formData, numLenders: e.target.value })
-              }
-            >
-              <option value="" disabled>
-                Select…
-              </option>
-              <option value="1">1</option>
-              <option value="2-3">2–3</option>
-              <option value="4+">4+</option>
-            </select>
+          <select
+            id="numLenders"
+            required
+            className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-orange-300/60"
+            value={formData.numLenders}
+            onChange={(e) =>
+              setFormData({ ...formData, numLenders: e.target.value })
+            }
+          >
+            <option value="" disabled>
+              Select…
+            </option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4+">4 or more</option>
+          </select>
           </div>
 
           {/* Monthly Income */}

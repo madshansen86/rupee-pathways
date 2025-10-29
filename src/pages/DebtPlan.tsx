@@ -1,10 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const DebtPlan = () => {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
+  const [numDebts, setNumDebts] = useState<number>(1);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = window.localStorage.getItem("rr_num_lenders");
+      if (stored) {
+        if (stored === "4+") {
+          setNumDebts(4);
+        } else {
+          const parsed = parseInt(stored, 10);
+          if (!Number.isNaN(parsed)) {
+            setNumDebts(parsed);
+          }
+        }
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const once = true;
@@ -90,53 +107,50 @@ const DebtPlan = () => {
               <h2 className="text-xl font-semibold text-white mb-6">Tell us about your debts</h2>
 
               <form className="space-y-6">
-                {/* Debt 1 */}
-                <div className="rounded-xl bg-white/5 backdrop-blur-sm p-5 border border-white/10">
-                  <h3 className="text-sm font-medium text-white mb-4">Debt #1</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs text-white/60 mb-2">Lender name</label>
-                      <input
-                        type="text"
-                        placeholder="e.g., HDFC Credit Card"
-                        className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-2">Outstanding amount (₹)</label>
-                      <input
-                        type="number"
-                        placeholder="e.g., 50000"
-                        className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-2">Interest rate (%)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        placeholder="e.g., 18.5"
-                        className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/60 mb-2">Minimum payment (₹)</label>
-                      <input
-                        type="number"
-                        placeholder="e.g., 2500"
-                        className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
-                      />
+                {/* Dynamic debt cards */}
+                {Array.from({ length: numDebts }, (_, i) => i + 1).map((idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-xl bg-white/5 backdrop-blur-sm p-5 border border-white/10"
+                  >
+                    <h3 className="text-sm font-medium text-white mb-4">Debt #{idx}</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-white/60 mb-2">Lender name</label>
+                        <input
+                          type="text"
+                          placeholder="e.g., HDFC Credit Card"
+                          className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-2">Outstanding amount (₹)</label>
+                        <input
+                          type="number"
+                          placeholder="e.g., 50000"
+                          className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-2">Interest rate (%)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="e.g., 18.5"
+                          className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-2">Minimum payment (₹)</label>
+                        <input
+                          type="number"
+                          placeholder="e.g., 2500"
+                          className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Add more debts button */}
-                <button
-                  type="button"
-                  className="w-full rounded-xl border border-white/10 border-dashed bg-white/5 hover:bg-white/10 px-4 py-4 text-sm text-white/70 hover:text-white transition"
-                >
-                  + Add another debt
-                </button>
+                ))}
 
                 {/* Monthly budget */}
                 <div className="rounded-xl bg-white/5 backdrop-blur-sm p-5 border border-white/10">
