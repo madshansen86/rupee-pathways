@@ -3,8 +3,50 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Start = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    totalDebt: "",
+    numLenders: "",
+    monthlyIncome: "",
+    stressLevel: "",
+  });
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const { error } = await supabase.from("intake_submissions").insert([
+      {
+        email: formData.email,
+        total_debt: formData.totalDebt,
+        num_lenders: formData.numLenders,
+        monthly_income: formData.monthlyIncome,
+        stress_level: formData.stressLevel,
+      },
+    ]);
+
+    if (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Something went wrong — please try again.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    } else {
+      navigate("/debt-plan");
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
       {/* Background with gradient and blur */}
@@ -47,7 +89,7 @@ const Start = () => {
           {/* Survey Form Card */}
           <div className="max-w-[480px] mx-auto">
             <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-8 shadow-2xl">
-              <form className="space-y-6">
+              <form id="onboarding-form" onSubmit={handleSubmit} className="space-y-6">
                 {/* Question 1: Total Debt */}
                 <div className="space-y-2">
                   <Label htmlFor="totalDebt" className="text-white text-sm font-medium">
@@ -60,6 +102,9 @@ const Start = () => {
                       type="number"
                       className="pl-8 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                       placeholder="0"
+                      value={formData.totalDebt}
+                      onChange={(e) => setFormData({ ...formData, totalDebt: e.target.value })}
+                      required
                     />
                   </div>
                 </div>
@@ -69,9 +114,13 @@ const Start = () => {
                   <Label htmlFor="lenders" className="text-white text-sm font-medium">
                     How many lenders are you paying each month?
                   </Label>
-                  <Select>
+                  <Select
+                    value={formData.numLenders}
+                    onValueChange={(value) => setFormData({ ...formData, numLenders: value })}
+                    required
+                  >
                     <SelectTrigger 
-                      id="lenders"
+                      id="numLenders"
                       className="bg-white/5 border-white/20 text-white"
                     >
                       <SelectValue placeholder="Select..." />
@@ -92,10 +141,13 @@ const Start = () => {
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70">₹</span>
                     <Input
-                      id="income"
+                      id="monthlyIncome"
                       type="number"
                       className="pl-8 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                       placeholder="0"
+                      value={formData.monthlyIncome}
+                      onChange={(e) => setFormData({ ...formData, monthlyIncome: e.target.value })}
+                      required
                     />
                   </div>
                 </div>
@@ -105,7 +157,11 @@ const Start = () => {
                   <Label className="text-white text-sm font-medium">
                     How are you feeling about your debt right now?
                   </Label>
-                  <RadioGroup className="space-y-3">
+                  <RadioGroup
+                    value={formData.stressLevel}
+                    onValueChange={(value) => setFormData({ ...formData, stressLevel: value })}
+                    className="space-y-3"
+                  >
                     <div className="flex items-center space-x-3">
                       <RadioGroupItem value="managing" id="managing" className="border-white/40" />
                       <Label htmlFor="managing" className="text-white text-sm font-normal cursor-pointer">
@@ -137,6 +193,9 @@ const Start = () => {
                     type="email"
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                     placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
                   />
                   <p className="text-xs text-white/60">
                     We'll send your personalised plan to this email.
@@ -147,9 +206,10 @@ const Start = () => {
                 <div className="pt-4">
                   <Button
                     type="submit"
-                    className="w-full h-12 rounded-full bg-gradient-to-r from-[#F97316] to-[#EA580C] text-white font-semibold hover:shadow-lg hover:shadow-orange-500/50 transition-all duration-300"
+                    disabled={isSubmitting}
+                    className="w-full h-12 rounded-full bg-gradient-to-r from-[#F97316] to-[#EA580C] text-white font-semibold hover:shadow-lg hover:shadow-orange-500/50 transition-all duration-300 disabled:opacity-50"
                   >
-                    Show my plan →
+                    {isSubmitting ? "Saving..." : "Show my plan →"}
                   </Button>
                   <p className="text-xs text-white/60 text-center mt-3">
                     Private. No spam.
