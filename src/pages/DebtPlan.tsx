@@ -1,27 +1,97 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+
+interface Debt {
+  lenderName: string;
+  balance: string;
+  interestRate: string;
+  minPayment: string;
+}
 
 const DebtPlan = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const email = searchParams.get("email");
   const [numDebts, setNumDebts] = useState<number>(1);
+  const [debts, setDebts] = useState<Debt[]>([]);
+  const [monthlyBudget, setMonthlyBudget] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem("rr_num_lenders");
       if (stored) {
+        let count = 1;
         if (stored === "4+") {
-          setNumDebts(4);
+          count = 4;
         } else {
           const parsed = parseInt(stored, 10);
           if (!Number.isNaN(parsed)) {
-            setNumDebts(parsed);
+            count = parsed;
           }
         }
+        setNumDebts(count);
+        setDebts(Array.from({ length: count }, () => ({
+          lenderName: "",
+          balance: "",
+          interestRate: "",
+          minPayment: ""
+        })));
       }
     }
   }, []);
+
+  const updateDebt = (index: number, field: keyof Debt, value: string) => {
+    setDebts(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const userEmail = window.localStorage.getItem("rr_email");
+      
+      if (!userEmail) {
+        toast.error("Email not found. Please start over.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const debtRecords = debts.map((debt, index) => ({
+        user_email: userEmail,
+        debt_index: index + 1,
+        lender_name: debt.lenderName,
+        balance: parseFloat(debt.balance) || 0,
+        interest_rate: parseFloat(debt.interestRate) || 0,
+        min_payment: parseFloat(debt.minPayment) || 0
+      }));
+
+      const { error } = await supabase
+        .from("debts")
+        .insert(debtRecords);
+
+      if (error) {
+        console.error("Supabase error:", error);
+        toast.error("Failed to save your plan. Please try again.");
+      } else {
+        toast.success("Plan saved!");
+        navigate("/your-plan");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const once = true;
@@ -112,20 +182,23 @@ const DebtPlan = () => {
             <div className="mt-12 rounded-[28px] bg-neutral-900/50 backdrop-blur-xl shadow-[0_20px_120px_-20px_rgba(0,0,0,0.7)] border border-white/5 border-gradient before:rounded-[28px] p-6 sm:p-8 [animation:fadeSlideIn_0.5s_ease-in-out_0.3s_both]">
               <h2 className="text-xl font-semibold text-white mb-6">Just a couple more questions about your debts</h2>
 
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 {/* Dynamic debt cards */}
-                {Array.from({ length: numDebts }, (_, i) => i + 1).map((idx) => (
+                {Array.from({ length: numDebts }, (_, i) => i).map((idx) => (
                   <div
                     key={idx}
                     className="rounded-xl bg-white/5 backdrop-blur-sm p-5 border border-white/10"
                   >
-                    <h3 className="text-sm font-medium text-white mb-4">Debt #{idx}</h3>
+                    <h3 className="text-sm font-medium text-white mb-4">Debt #{idx + 1}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs text-white/60 mb-2">Lender name</label>
                         <input
                           type="text"
                           placeholder="e.g., HDFC Credit Card"
+                          value={debts[idx]?.lenderName || ""}
+                          onChange={(e) => updateDebt(idx, "lenderName", e.target.value)}
+                          required
                           className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                         />
                       </div>
@@ -134,6 +207,9 @@ const DebtPlan = () => {
                         <input
                           type="number"
                           placeholder="e.g., 50000"
+                          value={debts[idx]?.balance || ""}
+                          onChange={(e) => updateDebt(idx, "balance", e.target.value)}
+                          required
                           className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                         />
                       </div>
@@ -143,6 +219,9 @@ const DebtPlan = () => {
                           type="number"
                           step="0.01"
                           placeholder="e.g., 18.5"
+                          value={debts[idx]?.interestRate || ""}
+                          onChange={(e) => updateDebt(idx, "interestRate", e.target.value)}
+                          required
                           className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                         />
                       </div>
@@ -151,6 +230,9 @@ const DebtPlan = () => {
                         <input
                           type="number"
                           placeholder="e.g., 2500"
+                          value={debts[idx]?.minPayment || ""}
+                          onChange={(e) => updateDebt(idx, "minPayment", e.target.value)}
+                          required
                           className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                         />
                       </div>
@@ -168,6 +250,9 @@ const DebtPlan = () => {
                     <input
                       type="number"
                       placeholder="e.g., 15000"
+                      value={monthlyBudget}
+                      onChange={(e) => setMonthlyBudget(e.target.value)}
+                      required
                       className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                     />
                     <p className="mt-2 text-xs text-white/50">
@@ -177,8 +262,12 @@ const DebtPlan = () => {
                 </div>
 
                 {/* Submit */}
-                <button className="cta-button w-full sm:w-auto" type="submit">
-                  <span>Generate my plan</span>
+                <button 
+                  className="cta-button w-full sm:w-auto" 
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  <span>{isSubmitting ? "Saving..." : "Generate my plan"}</span>
                 </button>
               </form>
             </div>
