@@ -1,8 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
@@ -76,31 +71,31 @@ const Start = () => {
       {/* Main Content */}
       <main className="relative z-10">
         <div className="container mx-auto px-4 py-16">
-          {/* Intro Section */}
-          <div className="max-w-[480px] mx-auto text-center mb-12">
-            <h1 className="text-white text-4xl md:text-5xl font-bold tracking-tight drop-shadow-xl mb-4">
+          {/* Title Section */}
+          <div className="text-center max-w-xl mx-auto mb-8">
+            <h1 className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
               Let's build your plan
             </h1>
-            <p className="text-white/70 text-base md:text-lg">
+            <p className="text-white/70 text-base mt-3">
               Answer a few quick questions. This doesn't affect your credit score.
             </p>
           </div>
 
           {/* Survey Form Card */}
-          <div className="max-w-[480px] mx-auto">
-            <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-8 shadow-2xl">
+          <div className="max-w-xl mx-auto">
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 md:p-8 border-gradient before:rounded-2xl">
               <form id="onboarding-form" onSubmit={handleSubmit} className="space-y-6">
                 {/* Question 1: Total Debt */}
-                <div className="space-y-2">
-                  <Label htmlFor="totalDebt" className="text-white text-sm font-medium">
+                <div className="flex flex-col gap-2 text-left text-white">
+                  <label htmlFor="totalDebt" className="text-sm font-medium text-white">
                     What do you currently owe in total?
-                  </Label>
+                  </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70">₹</span>
-                    <Input
+                    <input
                       id="totalDebt"
                       type="number"
-                      className="pl-8 bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                      className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 pl-8 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                       placeholder="0"
                       value={formData.totalDebt}
                       onChange={(e) => setFormData({ ...formData, totalDebt: e.target.value })}
@@ -110,40 +105,35 @@ const Start = () => {
                 </div>
 
                 {/* Question 2: Number of Lenders */}
-                <div className="space-y-2">
-                  <Label htmlFor="lenders" className="text-white text-sm font-medium">
+                <div className="flex flex-col gap-2 text-left text-white">
+                  <label htmlFor="numLenders" className="text-sm font-medium text-white">
                     How many lenders are you paying each month?
-                  </Label>
-                  <Select
+                  </label>
+                  <select
+                    id="numLenders"
+                    className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                     value={formData.numLenders}
-                    onValueChange={(value) => setFormData({ ...formData, numLenders: value })}
+                    onChange={(e) => setFormData({ ...formData, numLenders: e.target.value })}
                     required
                   >
-                    <SelectTrigger 
-                      id="numLenders"
-                      className="bg-white/5 border-white/20 text-white"
-                    >
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-white/20">
-                      <SelectItem value="1">1</SelectItem>
-                      <SelectItem value="2-3">2–3</SelectItem>
-                      <SelectItem value="4+">4+</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="" disabled className="bg-gray-900">Select...</option>
+                    <option value="1" className="bg-gray-900">1</option>
+                    <option value="2-3" className="bg-gray-900">2–3</option>
+                    <option value="4+" className="bg-gray-900">4+</option>
+                  </select>
                 </div>
 
                 {/* Question 3: Monthly Income */}
-                <div className="space-y-2">
-                  <Label htmlFor="income" className="text-white text-sm font-medium">
+                <div className="flex flex-col gap-2 text-left text-white">
+                  <label htmlFor="monthlyIncome" className="text-sm font-medium text-white">
                     What's your combined monthly take-home income?
-                  </Label>
+                  </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70">₹</span>
-                    <Input
+                    <input
                       id="monthlyIncome"
                       type="number"
-                      className="pl-8 bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                      className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 pl-8 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                       placeholder="0"
                       value={formData.monthlyIncome}
                       onChange={(e) => setFormData({ ...formData, monthlyIncome: e.target.value })}
@@ -152,46 +142,69 @@ const Start = () => {
                   </div>
                 </div>
 
-                {/* Question 4: Feeling */}
-                <div className="space-y-3">
-                  <Label className="text-white text-sm font-medium">
+                {/* Question 4: Feeling (Radio Group) */}
+                <div className="flex flex-col gap-2 text-left text-white">
+                  <label className="text-sm font-medium text-white">
                     How are you feeling about your debt right now?
-                  </Label>
-                  <RadioGroup
-                    value={formData.stressLevel}
-                    onValueChange={(value) => setFormData({ ...formData, stressLevel: value })}
-                    className="space-y-3"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="managing" id="managing" className="border-white/40" />
-                      <Label htmlFor="managing" className="text-white text-sm font-normal cursor-pointer">
+                  </label>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/20 px-3 py-2">
+                      <input
+                        type="radio"
+                        id="managing"
+                        name="stressLevel"
+                        value="managing"
+                        className="mt-1 accent-orange-400"
+                        checked={formData.stressLevel === "managing"}
+                        onChange={(e) => setFormData({ ...formData, stressLevel: e.target.value })}
+                        required
+                      />
+                      <label htmlFor="managing" className="text-sm text-white cursor-pointer flex-1">
                         I'm managing it
-                      </Label>
+                      </label>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="stressed" id="stressed" className="border-white/40" />
-                      <Label htmlFor="stressed" className="text-white text-sm font-normal cursor-pointer">
+                    <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/20 px-3 py-2">
+                      <input
+                        type="radio"
+                        id="stressed"
+                        name="stressLevel"
+                        value="stressed"
+                        className="mt-1 accent-orange-400"
+                        checked={formData.stressLevel === "stressed"}
+                        onChange={(e) => setFormData({ ...formData, stressLevel: e.target.value })}
+                        required
+                      />
+                      <label htmlFor="stressed" className="text-sm text-white cursor-pointer flex-1">
                         I'm stressed about it
-                      </Label>
+                      </label>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="urgent" id="urgent" className="border-white/40" />
-                      <Label htmlFor="urgent" className="text-white text-sm font-normal cursor-pointer">
+                    <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/20 px-3 py-2">
+                      <input
+                        type="radio"
+                        id="urgent"
+                        name="stressLevel"
+                        value="urgent"
+                        className="mt-1 accent-orange-400"
+                        checked={formData.stressLevel === "urgent"}
+                        onChange={(e) => setFormData({ ...formData, stressLevel: e.target.value })}
+                        required
+                      />
+                      <label htmlFor="urgent" className="text-sm text-white cursor-pointer flex-1">
                         It's urgent
-                      </Label>
+                      </label>
                     </div>
-                  </RadioGroup>
+                  </div>
                 </div>
 
                 {/* Question 5: Email */}
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white text-sm font-medium">
+                <div className="flex flex-col gap-2 text-left text-white">
+                  <label htmlFor="email" className="text-sm font-medium text-white">
                     Your email
-                  </Label>
-                  <Input
+                  </label>
+                  <input
                     id="email"
                     type="email"
-                    className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                    className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                     placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -203,15 +216,15 @@ const Start = () => {
                 </div>
 
                 {/* Submit Button */}
-                <div className="pt-4">
-                  <Button
+                <div className="pt-6">
+                  <button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full h-12 rounded-full bg-gradient-to-r from-[#F97316] to-[#EA580C] text-white font-semibold hover:shadow-lg hover:shadow-orange-500/50 transition-all duration-300 disabled:opacity-50"
                   >
                     {isSubmitting ? "Saving..." : "Show my plan →"}
-                  </Button>
-                  <p className="text-xs text-white/60 text-center mt-3">
+                  </button>
+                  <p className="text-center text-xs text-white/60 mt-2">
                     Private. No spam.
                   </p>
                 </div>
