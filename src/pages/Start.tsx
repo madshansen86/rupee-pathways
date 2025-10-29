@@ -70,7 +70,7 @@ const Start = () => {
           <img
             src="/logo-rr.svg"
             alt="RupeeRebel"
-            className="h-8 w-auto"
+            className="h-12 w-auto md:h-14 transition-transform duration-200 hover:scale-105"
           />
         </div>
       </header>

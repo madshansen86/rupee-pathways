@@ -64,7 +64,7 @@ const Index = () => {
                 <img
                   src="/logo-rr.svg"
                   alt="RupeeRebel"
-                  className="h-12 w-auto"
+                  className="h-12 w-auto md:h-14 transition-transform duration-200 hover:scale-105"
                 />
               </div>
               <div className="flex items-center gap-3">
