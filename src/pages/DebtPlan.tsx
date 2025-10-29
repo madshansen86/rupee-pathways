@@ -71,7 +71,13 @@ const DebtPlan = () => {
         <header className="relative z-20 [animation:fadeSlideIn_0.5s_ease-in-out_0.1s_both]">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="flex items-center justify-between border-b border-white/10 pt-6 pb-6">
-              <div className="text-white font-semibold text-lg tracking-tight">RupeeRebel</div>
+              <Link to="/" className="flex items-center">
+                <img
+                  src="/logo-rr.svg"
+                  alt="RupeeRebel"
+                  className="h-12 w-auto md:h-14 transition-transform duration-200 hover:scale-105"
+                />
+              </Link>
               <div className="flex items-center gap-3">
                 <Link
                   to="/"
@@ -104,7 +110,7 @@ const DebtPlan = () => {
 
             {/* Plan builder form */}
             <div className="mt-12 rounded-[28px] bg-neutral-900/50 backdrop-blur-xl shadow-[0_20px_120px_-20px_rgba(0,0,0,0.7)] border border-white/5 border-gradient before:rounded-[28px] p-6 sm:p-8 [animation:fadeSlideIn_0.5s_ease-in-out_0.3s_both]">
-              <h2 className="text-xl font-semibold text-white mb-6">Tell us about your debts</h2>
+              <h2 className="text-xl font-semibold text-white mb-6">Just a couple more questions about your debts</h2>
 
               <form className="space-y-6">
                 {/* Dynamic debt cards */}
