@@ -25,16 +25,24 @@ const YourPlan = () => {
   useEffect(() => {
     const fetchDebts = async () => {
       const email = window.localStorage.getItem("rr_email");
+      const planId = window.localStorage.getItem("rr_plan_id");
+      
       if (!email) {
         navigate("/start");
         return;
       }
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("debts")
         .select("lender_name, balance, interest_rate, min_payment")
-        .eq("user_email", email)
-        .order("debt_index", { ascending: true });
+        .eq("user_email", email);
+
+      // Filter by plan_id if available
+      if (planId) {
+        query = query.eq("plan_id", planId);
+      }
+
+      const { data, error } = await query.order("debt_index", { ascending: true });
 
       if (error) {
         console.error("Error fetching debts:", error);
@@ -98,12 +106,21 @@ const YourPlan = () => {
     apr: d.interest_rate,
   })));
 
-  const totalDebt = normalizedDebts.reduce((sum, d) => sum + d.balance, 0);
-  const totalMonthly = normalizedDebts.reduce((sum, d) => sum + d.min_payment, 0);
+  // Dedupe by lender_name|balance|interest_rate as safety net
+  const dedupedDebts = normalizedDebts.filter((debt, index, self) => 
+    index === self.findIndex(d => 
+      d.lender_name === debt.lender_name && 
+      d.balance === debt.balance && 
+      d.interest_rate === debt.interest_rate
+    )
+  );
+
+  const totalDebt = dedupedDebts.reduce((sum, d) => sum + d.balance, 0);
+  const totalMonthly = dedupedDebts.reduce((sum, d) => sum + d.min_payment, 0);
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
 
   // Sort debts by ascending balance (Snowball method)
-  const sortedDebts = [...normalizedDebts].sort((a, b) => a.balance - b.balance);
+  const sortedDebts = [...dedupedDebts].sort((a, b) => a.balance - b.balance);
 
   const handleConsolidationClick = async () => {
     const email = window.localStorage.getItem("rr_email");
@@ -259,7 +276,7 @@ const YourPlan = () => {
             Consolidation preview
           </h2>
           <p className="text-white/60 font-geist text-sm">
-            You're paying ₹{totalMonthly.toLocaleString("en-IN")}/mo across {debts.length} lenders. We may be able to consolidate into one payment.
+            You're paying ₹{totalMonthly.toLocaleString("en-IN")}/mo across {dedupedDebts.length} lenders. We may be able to consolidate into one payment.
           </p>
           <div className="relative inline-block">
             <button

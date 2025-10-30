@@ -67,9 +67,32 @@ const DebtPlan = () => {
         navigate("/start");
         return;
       }
+
+      // Get or create plan_id
+      let planId = window.localStorage.getItem("rr_plan_id");
+      
+      if (!planId) {
+        // Create new plan
+        const { data: planData, error: planError } = await supabase
+          .from("plans")
+          .insert([{ email }])
+          .select("id")
+          .single();
+        
+        if (planError) {
+          console.error("[Plan creation error]", planError);
+          toast.error(`Failed to create plan: ${planError.message || "Please try again."}`);
+          return;
+        }
+        
+        planId = planData.id;
+        window.localStorage.setItem("rr_plan_id", planId);
+      }
+
       const cleaned = debts
         .map((d, i) => ({
           user_email: email,
+          plan_id: planId,
           debt_index: i + 1,
           lender_name: (d.lenderName || "").trim() || null,
           balance: d.balance !== "" ? Number(d.balance) : null,
@@ -77,10 +100,24 @@ const DebtPlan = () => {
           min_payment: d.minPayment !== "" ? Number(d.minPayment) : null,
         }))
         .filter((row) => row.lender_name || row.balance || row.interest_rate || row.min_payment);
+      
       if (!cleaned.length) {
         toast.error("Add at least one debt. Please fill one debt card before generating your plan.");
         return;
       }
+
+      // Delete existing debts for this plan before inserting
+      const { error: deleteError } = await supabase
+        .from("debts")
+        .delete()
+        .eq("user_email", email)
+        .eq("plan_id", planId);
+
+      if (deleteError) {
+        console.error("[Delete existing debts error]", deleteError);
+      }
+
+      // Insert new debts
       const { error } = await supabase.from("debts").insert(cleaned);
       if (error) {
         console.error("[Supabase insert error]", error);
