@@ -11,11 +11,17 @@ interface Debt {
   min_payment: number;
 }
 
+type Strategy = "snowball" | "avalanche";
+
+const normalizeStrategy = (s: string): Strategy =>
+  s === "avalanche" || s === "snowball" ? s : s === "avalance" ? "avalanche" : "snowball";
+
 const YourPlan = () => {
   const navigate = useNavigate();
   const [debts, setDebts] = useState<Debt[]>([]);
   const [loading, setLoading] = useState(true);
-  const [strategy, setStrategy] = useState<"snowball" | "avalanche">("snowball");
+  const [strategy, _setStrategy] = useState<Strategy>("snowball");
+  const setStrategy = (s: string | Strategy) => _setStrategy(normalizeStrategy(String(s)));
   const [quickWins, setQuickWins] = useState({
     freezeSpend: false,
     autoAdd: false,
