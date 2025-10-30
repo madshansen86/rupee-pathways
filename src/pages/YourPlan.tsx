@@ -77,6 +77,11 @@ const YourPlan = () => {
     })();
   }, [navigate]);
 
+  // Badge logger for strategy changes
+  useEffect(() => {
+    console.log("🎯 Strategy changed to:", strategy);
+  }, [strategy]);
+
   // Sanitize helper
   const toNum = (v: any) => {
     if (v == null) return 0;
@@ -96,6 +101,13 @@ const YourPlan = () => {
     };
   });
 
+  // Debug: console.table the normalized debts
+  console.table(normalizedDebts.map(d => ({
+    lender: d.lender_name,
+    bal: d.balance,
+    apr: d.interest_rate,
+  })));
+
   const totalDebt = normalizedDebts.reduce((sum, d) => sum + d.balance, 0);
   const totalMonthly = normalizedDebts.reduce((sum, d) => sum + d.min_payment, 0);
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
@@ -108,11 +120,13 @@ const YourPlan = () => {
 
   const cmpAvalanche = (a: any, b: any) =>
     (b.interest_rate - a.interest_rate) ||
-    (a.balance - b.balance) ||
+    (b.balance - a.balance) ||
     a.lender_name.localeCompare(b.lender_name);
 
   // Build the sorted list fresh (no memo)
-  const sortedDebts = [...normalizedDebts].sort(strategy === "snowball" ? cmpSnowball : cmpAvalanche);
+  const sortedDebts = strategy === "snowball"
+    ? [...normalizedDebts].sort((a, b) => a.balance - b.balance)
+    : [...normalizedDebts].sort((a, b) => b.interest_rate - a.interest_rate || b.balance - a.balance);
 
   const handleConsolidationClick = async () => {
     const email = window.localStorage.getItem("rr_email");
@@ -224,6 +238,11 @@ const YourPlan = () => {
 
         {/* Strategy tabs */}
         <div className="border-gradient before:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-6">
+          {/* Debug badge */}
+          <div id="rr-strategy-badge" className="inline-block bg-orange-500/20 text-orange-300 text-xs px-3 py-1 rounded-full font-geist">
+            Current mode: {strategy}
+          </div>
+
           <div className="flex gap-2">
             <button
               type="button"
@@ -247,40 +266,39 @@ const YourPlan = () => {
             >
               Avalanche
             </button>
-            <span className="ml-3 text-xs text-white/60 font-geist">
-              Mode: <span className="text-white">{strategy}</span>
-            </span>
           </div>
 
           {/* Render strictly as a vertical list, and HARD-remount when strategy changes */}
-          <ol key={strategy} className="space-y-4">
-            {sortedDebts.map((d, i) => (
-              <li
-                key={d.key}
-                className="border-gradient before:rounded-xl bg-white/5 rounded-xl p-4 backdrop-blur"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-white font-semibold font-geist">
-                    Step {i + 1}: Focus {d.lender_name}
+          <div className="flex flex-col">
+            <ol key={`list-${strategy}`} className="space-y-4">
+              {sortedDebts.map((d, i) => (
+                <li
+                  key={d.key}
+                  className="border-gradient before:rounded-xl bg-white/5 rounded-xl p-4 backdrop-blur"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-white font-semibold font-geist">
+                      Step {i + 1}: Focus {d.lender_name}
+                    </p>
+                    <span className="text-xs text-white/60 font-geist">
+                      {strategy === "snowball" ? "Smallest balance first" : "Highest APR first"}
+                    </span>
+                  </div>
+
+                  {/* On-screen debug badges so you SEE the sort keys */}
+                  <div className="mt-2 flex gap-2 text-[11px] text-white/70 font-geist">
+                    <span className="inline-block bg-white/10 rounded px-2 py-0.5">Balance: ₹{d.balance.toLocaleString()}</span>
+                    <span className="inline-block bg-white/10 rounded px-2 py-0.5">APR: {d.interest_rate}%</span>
+                    <span className="inline-block bg-white/10 rounded px-2 py-0.5">Min: ₹{d.min_payment.toLocaleString()}</span>
+                  </div>
+
+                  <p className="mt-1 text-xs text-white/60 font-geist">
+                    Then roll ₹{d.min_payment.toLocaleString()} into the next step.
                   </p>
-                  <span className="text-xs text-white/60 font-geist">
-                    {strategy === "snowball" ? "Smallest balance first" : "Highest APR first"}
-                  </span>
-                </div>
-
-                {/* On-screen debug badges so you SEE the sort keys */}
-                <div className="mt-2 flex gap-2 text-[11px] text-white/70 font-geist">
-                  <span className="inline-block bg-white/10 rounded px-2 py-0.5">Balance: ₹{d.balance.toLocaleString()}</span>
-                  <span className="inline-block bg-white/10 rounded px-2 py-0.5">APR: {d.interest_rate}%</span>
-                  <span className="inline-block bg-white/10 rounded px-2 py-0.5">Min: ₹{d.min_payment.toLocaleString()}</span>
-                </div>
-
-                <p className="mt-1 text-xs text-white/60 font-geist">
-                  Then roll ₹{d.min_payment.toLocaleString()} into the next step.
-                </p>
-              </li>
-            ))}
-          </ol>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
 
         {/* Consolidation preview */}
