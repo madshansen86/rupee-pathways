@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
@@ -71,48 +71,27 @@ const YourPlan = () => {
     })();
   }, [navigate]);
 
-  const normalizedDebts = useMemo(() => {
-    const src = Array.isArray(debts) ? debts : [];
-    return src.map((d: any, idx) => {
-      const apr = d.interest_rate ?? d.interestRate ?? d.rate ?? 0;
-      const bal = d.balance ?? d.total ?? 0;
-      const min = d.min_payment ?? d.minPayment ?? d.minimum ?? 0;
-
-      return {
-        key: d.id ?? `${d.lender_name ?? d.lenderName ?? "lender"}-${idx}`,
-        lender_name: d.lender_name ?? d.lenderName ?? "Lender",
-        balance: Number(bal) || 0,
-        interest_rate: Number(apr) || 0,
-        min_payment: Number(min) || 0,
-      };
-    });
-  }, [debts]);
+  // Normalize values safely
+  const normalizedDebts = (debts || []).map((d: any, i) => ({
+    key: d.id ?? i,
+    lender_name: d.lender_name ?? d.lenderName ?? `Lender ${i + 1}`,
+    balance: Number(d.balance ?? d.total ?? 0),
+    interest_rate: Number(d.interest_rate ?? d.interestRate ?? 0),
+    min_payment: Number(d.min_payment ?? d.minPayment ?? 0),
+  }));
 
   const totalDebt = normalizedDebts.reduce((sum, d) => sum + d.balance, 0);
   const totalMonthly = normalizedDebts.reduce((sum, d) => sum + d.min_payment, 0);
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
 
-  const sortedDebts = useMemo(() => {
-    const arr = [...normalizedDebts];
-    if (strategy === "snowball") {
-      arr.sort((a, b) => a.balance - b.balance); // smallest balance first
-    } else {
-      arr.sort((a, b) => b.interest_rate - a.interest_rate); // highest APR first
-    }
-    return arr;
-  }, [normalizedDebts, strategy]);
+  // Ensure re-render by copying on each toggle
+  const sortedDebts =
+    strategy === "snowball"
+      ? [...normalizedDebts].sort((a, b) => a.balance - b.balance)
+      : [...normalizedDebts].sort((a, b) => b.interest_rate - a.interest_rate);
 
-  // Debug: verify it actually flips and sorts
-  useEffect(() => {
-    console.log("[STRATEGY]", strategy);
-    console.table(
-      sortedDebts.map((d) => ({
-        lender: d.lender_name,
-        balance: d.balance,
-        apr: d.interest_rate,
-      }))
-    );
-  }, [strategy, sortedDebts]);
+  // Debug helper
+  console.log("Sorted by:", strategy, sortedDebts.map(d => d.lender_name));
 
   const handleConsolidationClick = async () => {
     const email = window.localStorage.getItem("rr_email");
@@ -224,62 +203,56 @@ const YourPlan = () => {
 
         {/* Strategy tabs */}
         <div className="border-gradient before:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-6">
-          <div className="flex items-center gap-4">
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={() => setStrategy("snowball")}
-              className={`px-4 py-2 rounded-lg font-geist text-sm transition-colors ${
+              className={`px-3 py-2 rounded-lg font-geist text-sm transition ${
                 strategy === "snowball"
-                  ? "bg-orange-500 text-white"
-                  : "bg-white/5 text-white/60 hover:text-white"
+                  ? "bg-white/10 text-white"
+                  : "bg-transparent border border-white/10 text-white/60"
               }`}
             >
-              Snowball (fast wins)
+              Snowball
             </button>
             <button
               type="button"
               onClick={() => setStrategy("avalanche")}
-              className={`px-4 py-2 rounded-lg font-geist text-sm transition-colors ${
+              className={`px-3 py-2 rounded-lg font-geist text-sm transition ${
                 strategy === "avalanche"
-                  ? "bg-orange-500 text-white"
-                  : "bg-white/5 text-white/60 hover:text-white"
+                  ? "bg-white/10 text-white"
+                  : "bg-transparent border border-white/10 text-white/60"
               }`}
             >
-              Avalanche (less interest)
+              Avalanche
             </button>
-            <span className="ml-2 text-xs text-white/60 font-geist">
+
+            <span className="ml-3 text-xs text-white/50 font-geist">
               Mode: <span className="text-white">{strategy}</span>
             </span>
           </div>
 
-          <ol className="space-y-3">
+          {/* Render SORTED debts */}
+          <div className="grid gap-4 md:grid-cols-2">
             {sortedDebts.map((d, i) => (
-              <li
+              <div
                 key={d.key}
-                className="border-gradient before:rounded-xl bg-white/5 rounded-xl p-4 backdrop-blur border border-white/10"
+                className="border-gradient before:rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-white font-geist font-semibold">
-                    Step {i + 1}: Focus {d.lender_name}
-                  </p>
-                  <span className="text-xs text-white/60 font-geist">
-                    {strategy === "snowball"
-                      ? "Smallest balance first"
-                      : "Highest APR first"}
-                  </span>
-                </div>
-                <div className="mt-2 text-sm text-white/70 font-geist">
-                  Balance: ₹{d.balance.toLocaleString("en-IN")} · APR:{" "}
-                  {d.interest_rate}% · Min: ₹
-                  {d.min_payment.toLocaleString("en-IN")}
-                </div>
-                <div className="mt-1 text-xs text-white/60 font-geist">
-                  After this, roll ₹{d.min_payment.toLocaleString("en-IN")}{" "}
-                  into the next step.
-                </div>
-              </li>
+                <p className="text-white font-medium font-geist text-base">
+                  Step {i + 1}: Focus {d.lender_name}
+                </p>
+                <p className="text-white/60 text-sm font-geist mt-1">
+                  Balance: ₹{d.balance.toLocaleString()} — APR: {d.interest_rate}% — Min payment: ₹{d.min_payment.toLocaleString()}
+                </p>
+                <p className="text-white/50 text-xs mt-2">
+                  {strategy === "snowball"
+                    ? "This comes first because it has the smallest balance."
+                    : "This comes first because it has the highest interest rate."}
+                </p>
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
 
         {/* Consolidation preview */}
