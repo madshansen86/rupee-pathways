@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
+import confetti from "canvas-confetti";
 
 interface Debt {
   lender_name: string;
@@ -59,6 +60,15 @@ const YourPlan = () => {
         console.error("Error parsing quick wins:", e);
       }
     }
+
+    // Confetti animation
+    const duration = 2000;
+    const end = Date.now() + duration;
+    (function frame() {
+      confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 } });
+      confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 } });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
   }, [navigate]);
 
   const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
@@ -141,11 +151,11 @@ const YourPlan = () => {
       <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 space-y-12">
         {/* Hero */}
         <div className="text-center space-y-3">
-          <h1 className="text-white font-geist font-bold text-4xl md:text-5xl tracking-tighter">
-            Your debt-free plan is ready
+          <h1 className="text-3xl md:text-4xl font-geist tracking-tighter font-semibold text-white">
+            Congratulations — you've taken action!
           </h1>
-          <p className="text-white/60 font-geist text-lg">
-            Built from your answers today.
+          <p className="text-white/70 max-w-2xl mt-2 mx-auto">
+            You are already doing so much better than your peers by taking steps to control your debts. Please review your plan below.
           </p>
         </div>
 
@@ -250,12 +260,17 @@ const YourPlan = () => {
           <p className="text-white/60 font-geist text-sm">
             You're paying ₹{totalMonthly.toLocaleString("en-IN")}/mo across {debts.length} lenders. We may be able to consolidate into one payment.
           </p>
-          <button
-            onClick={handleConsolidationClick}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-geist font-medium px-6 py-2.5 rounded-lg transition-colors"
-          >
-            Check my eligibility
-          </button>
+          <div className="relative inline-block">
+            <button
+              onClick={handleConsolidationClick}
+              className="relative bg-orange-400 hover:bg-orange-500 text-black font-semibold px-6 py-3 rounded-xl shadow-md transition-all"
+            >
+              Check my eligibility
+            </button>
+            <span className="absolute -top-2 -right-2 bg-white/20 text-white text-[10px] uppercase tracking-widest px-2 py-[2px] rounded-md">
+              Coming soon
+            </span>
+          </div>
         </div>
 
         {/* Quick wins */}
