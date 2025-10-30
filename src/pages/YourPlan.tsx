@@ -150,14 +150,14 @@ const YourPlan = () => {
       {/* Main content */}
       <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 space-y-12">
         {/* Hero */}
-        <div className="text-center space-y-3">
-          <h1 className="text-3xl md:text-4xl font-geist tracking-tighter font-semibold text-white">
+        <section className="relative flex flex-col items-center justify-center text-center py-24 px-6 bg-gradient-to-b from-black/80 via-black/60 to-transparent backdrop-blur-sm">
+          <h1 className="text-5xl md:text-6xl font-geist tracking-tighter font-semibold text-white max-w-3xl">
             Congratulations — you've taken action!
           </h1>
-          <p className="text-white/70 max-w-2xl mt-2 mx-auto">
+          <p className="mt-4 text-lg text-white/70 max-w-xl">
             You are already doing so much better than your peers by taking steps to control your debts. Please review your plan below.
           </p>
-        </div>
+        </section>
 
         {/* Snapshot cards */}
         <div className="grid gap-6 md:grid-cols-3">
