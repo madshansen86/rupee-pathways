@@ -72,12 +72,20 @@ const YourPlan = () => {
   }, [navigate]);
 
   const normalizedDebts = useMemo(() => {
-    return debts.map((d: any) => ({
-      lender_name: d.lender_name,
-      balance: Number(d.balance) || 0,
-      interest_rate: Number(d.interest_rate || d.interestRate) || 0,
-      min_payment: Number(d.min_payment) || 0,
-    }));
+    const src = Array.isArray(debts) ? debts : [];
+    return src.map((d: any, idx) => {
+      const apr = d.interest_rate ?? d.interestRate ?? d.rate ?? 0;
+      const bal = d.balance ?? d.total ?? 0;
+      const min = d.min_payment ?? d.minPayment ?? d.minimum ?? 0;
+
+      return {
+        key: d.id ?? `${d.lender_name ?? d.lenderName ?? "lender"}-${idx}`,
+        lender_name: d.lender_name ?? d.lenderName ?? "Lender",
+        balance: Number(bal) || 0,
+        interest_rate: Number(apr) || 0,
+        min_payment: Number(min) || 0,
+      };
+    });
   }, [debts]);
 
   const totalDebt = normalizedDebts.reduce((sum, d) => sum + d.balance, 0);
@@ -85,12 +93,26 @@ const YourPlan = () => {
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
 
   const sortedDebts = useMemo(() => {
-    return [...normalizedDebts].sort((a, b) =>
-      strategy === "snowball"
-        ? a.balance - b.balance
-        : b.interest_rate - a.interest_rate
-    );
+    const arr = [...normalizedDebts];
+    if (strategy === "snowball") {
+      arr.sort((a, b) => a.balance - b.balance); // smallest balance first
+    } else {
+      arr.sort((a, b) => b.interest_rate - a.interest_rate); // highest APR first
+    }
+    return arr;
   }, [normalizedDebts, strategy]);
+
+  // Debug: verify it actually flips and sorts
+  useEffect(() => {
+    console.log("[STRATEGY]", strategy);
+    console.table(
+      sortedDebts.map((d) => ({
+        lender: d.lender_name,
+        balance: d.balance,
+        apr: d.interest_rate,
+      }))
+    );
+  }, [strategy, sortedDebts]);
 
   const handleConsolidationClick = async () => {
     const email = window.localStorage.getItem("rr_email");
@@ -225,45 +247,39 @@ const YourPlan = () => {
             >
               Avalanche (less interest)
             </button>
+            <span className="ml-2 text-xs text-white/60 font-geist">
+              Mode: <span className="text-white">{strategy}</span>
+            </span>
           </div>
 
-          <div className="space-y-4">
-            {sortedDebts.map((debt, idx) => (
-              <div
-                key={idx}
-                className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2"
+          <ol className="space-y-3">
+            {sortedDebts.map((d, i) => (
+              <li
+                key={d.key}
+                className="border-gradient before:rounded-xl bg-white/5 rounded-xl p-4 backdrop-blur border border-white/10"
               >
-                <p className="text-white font-geist font-medium text-lg">
-                  Step {idx + 1}: {debt.lender_name}
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                  <div>
-                    <p className="text-white/50 font-geist">Balance</p>
-                    <p className="text-white font-geist">
-                      ₹{debt.balance.toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-white/50 font-geist">APR</p>
-                    <p className="text-white font-geist">
-                      {debt.interest_rate}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-white/50 font-geist">Min payment</p>
-                    <p className="text-white font-geist">
-                      ₹{debt.min_payment.toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                  <div className="col-span-2 md:col-span-1">
-                    <p className="text-orange-400 font-geist text-xs">
-                      After this, roll ₹{debt.min_payment.toLocaleString("en-IN")} into the next step.
-                    </p>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-white font-geist font-semibold">
+                    Step {i + 1}: Focus {d.lender_name}
+                  </p>
+                  <span className="text-xs text-white/60 font-geist">
+                    {strategy === "snowball"
+                      ? "Smallest balance first"
+                      : "Highest APR first"}
+                  </span>
                 </div>
-              </div>
+                <div className="mt-2 text-sm text-white/70 font-geist">
+                  Balance: ₹{d.balance.toLocaleString("en-IN")} · APR:{" "}
+                  {d.interest_rate}% · Min: ₹
+                  {d.min_payment.toLocaleString("en-IN")}
+                </div>
+                <div className="mt-1 text-xs text-white/60 font-geist">
+                  After this, roll ₹{d.min_payment.toLocaleString("en-IN")}{" "}
+                  into the next step.
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
 
         {/* Consolidation preview */}
