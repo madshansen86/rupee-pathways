@@ -28,7 +28,15 @@ const Index = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate('/start');
+    const formData = new FormData(e.currentTarget);
+    const email = (formData.get('email') as string || '').trim().toLowerCase();
+    
+    if (email) {
+      window.localStorage.setItem('rr_email', email);
+      window.location.href = `/start?email=${encodeURIComponent(email)}`;
+    } else {
+      navigate('/start');
+    }
   };
 
   return (

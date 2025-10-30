@@ -17,14 +17,18 @@ const Start = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Prefill email from localStorage on mount
+  // Prefill email from localStorage or URL param on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlEmail = params.get("email");
       const savedEmail = window.localStorage.getItem("rr_email");
-      if (savedEmail) {
+      const email = urlEmail || savedEmail;
+      
+      if (email) {
         setFormData((prev) => ({
           ...prev,
-          email: savedEmail,
+          email: email,
         }));
       }
     }
@@ -238,25 +242,33 @@ const Start = () => {
           </div>
 
           {/* Email */}
-          <div className="flex flex-col gap-2 text-left text-white">
-            <label htmlFor="email" className="text-sm font-medium text-white">
-              Your email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              required
-              className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-            />
-            <span className="text-xs text-white/60">
-              We'll send your personalised plan to this email.
-            </span>
-          </div>
+          {formData.email ? (
+            <div className="flex flex-col gap-2 text-left text-white">
+              <span className="text-xs text-white/60">
+                Plan will be sent to: <span className="text-white">{formData.email}</span>
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 text-left text-white">
+              <label htmlFor="email" className="text-sm font-medium text-white">
+                Your email
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+                className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+              <span className="text-xs text-white/60">
+                We'll send your personalised plan to this email.
+              </span>
+            </div>
+          )}
 
           {/* Submit Button */}
           <div className="flex flex-col">

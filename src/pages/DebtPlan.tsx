@@ -14,11 +14,17 @@ interface Debt {
 const DebtPlan = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const email = searchParams.get("email");
   const [numDebts, setNumDebts] = useState<number>(1);
   const [debts, setDebts] = useState<Debt[]>([]);
   const [monthlyBudget, setMonthlyBudget] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Helper to get email from localStorage or URL
+  const getEmail = () => {
+    const urlEmail = searchParams.get("email");
+    const savedEmail = window.localStorage.getItem("rr_email");
+    return urlEmail || savedEmail || "";
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -57,10 +63,11 @@ const DebtPlan = () => {
     setIsSubmitting(true);
 
     try {
-      const userEmail = window.localStorage.getItem("rr_email");
+      const userEmail = getEmail();
       
       if (!userEmail) {
-        toast.error("Email not found. Please start over.");
+        toast.error("We need your email to build your plan");
+        navigate("/start");
         setIsSubmitting(false);
         return;
       }
@@ -83,7 +90,7 @@ const DebtPlan = () => {
         toast.error("Failed to save your plan. Please try again.");
       } else {
         toast.success("Plan saved!");
-        navigate("/your-plan");
+        navigate(`/your-plan?email=${encodeURIComponent(userEmail)}`);
       }
     } catch (err) {
       console.error("Error:", err);
@@ -171,11 +178,6 @@ const DebtPlan = () => {
                   debt freedom plan
                 </span>
               </h1>
-              {email && (
-                <p className="mt-4 text-sm text-white/60">
-                  Creating plan for <span className="text-white/80">{email}</span>
-                </p>
-              )}
             </div>
 
             {/* Plan builder form */}
