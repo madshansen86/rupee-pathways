@@ -71,15 +71,16 @@ const YourPlan = () => {
     })();
   }, [navigate]);
 
-  // Normalize *every render* (no memo to avoid stale caching)
-  const normalizedDebts = (Array.isArray(debts) ? debts : []).map((d: any, i) => {
+  // Sanitize helper
+  const toNum = (v: any) => {
+    if (v == null) return 0;
+    if (typeof v === "string") return Number(v.replace(/[₹,\s]/g, "")) || 0;
+    return Number(v) || 0;
+  };
+
+  // Normalize every render
+  const normalizedDebts = (Array.isArray(debts) ? debts : []).map((d: any, i: number) => {
     const name = d.lender_name ?? d.lenderName ?? `Lender ${i + 1}`;
-    const toNum = (v: any) => {
-      if (v == null) return 0;
-      // handle strings like "12,345.67" or "₹12,345"
-      if (typeof v === "string") return Number(v.replace(/[₹,\s]/g, "")) || 0;
-      return Number(v) || 0;
-    };
     return {
       key: d.id ?? `${name}-${i}`,
       lender_name: name,
@@ -93,11 +94,19 @@ const YourPlan = () => {
   const totalMonthly = normalizedDebts.reduce((sum, d) => sum + d.min_payment, 0);
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
 
-  // Sort fresh based on strategy (no memo)
-  const sortedDebts =
-    strategy === "snowball"
-      ? [...normalizedDebts].sort((a, b) => a.balance - b.balance)          // smallest balance first
-      : [...normalizedDebts].sort((a, b) => b.interest_rate - a.interest_rate); // highest APR first
+  // Deterministic comparators (with tie-breakers)
+  const cmpSnowball = (a: any, b: any) =>
+    (a.balance - b.balance) ||
+    (b.interest_rate - a.interest_rate) ||
+    a.lender_name.localeCompare(b.lender_name);
+
+  const cmpAvalanche = (a: any, b: any) =>
+    (b.interest_rate - a.interest_rate) ||
+    (a.balance - b.balance) ||
+    a.lender_name.localeCompare(b.lender_name);
+
+  // Build the sorted list fresh (no memo)
+  const sortedDebts = [...normalizedDebts].sort(strategy === "snowball" ? cmpSnowball : cmpAvalanche);
 
   const handleConsolidationClick = async () => {
     const email = window.localStorage.getItem("rr_email");
@@ -219,7 +228,7 @@ const YourPlan = () => {
                   : "bg-transparent border border-white/10 text-white/70"
               }`}
             >
-              Snowball (fast wins)
+              Snowball
             </button>
             <button
               type="button"
@@ -230,16 +239,15 @@ const YourPlan = () => {
                   : "bg-transparent border border-white/10 text-white/70"
               }`}
             >
-              Avalanche (less interest)
+              Avalanche
             </button>
-
             <span className="ml-3 text-xs text-white/60 font-geist">
               Mode: <span className="text-white">{strategy}</span>
             </span>
           </div>
 
-          {/* STRICT vertical list (no grid, no columns) */}
-          <ol className="space-y-4">
+          {/* Render strictly as a vertical list, and HARD-remount when strategy changes */}
+          <ol key={strategy} className="space-y-4">
             {sortedDebts.map((d, i) => (
               <li
                 key={d.key}
@@ -253,9 +261,14 @@ const YourPlan = () => {
                     {strategy === "snowball" ? "Smallest balance first" : "Highest APR first"}
                   </span>
                 </div>
-                <p className="mt-2 text-sm text-white/70 font-geist">
-                  Balance: ₹{d.balance.toLocaleString()} · APR: {d.interest_rate}% · Min: ₹{d.min_payment.toLocaleString()}
-                </p>
+
+                {/* On-screen debug badges so you SEE the sort keys */}
+                <div className="mt-2 flex gap-2 text-[11px] text-white/70 font-geist">
+                  <span className="inline-block bg-white/10 rounded px-2 py-0.5">Balance: ₹{d.balance.toLocaleString()}</span>
+                  <span className="inline-block bg-white/10 rounded px-2 py-0.5">APR: {d.interest_rate}%</span>
+                  <span className="inline-block bg-white/10 rounded px-2 py-0.5">Min: ₹{d.min_payment.toLocaleString()}</span>
+                </div>
+
                 <p className="mt-1 text-xs text-white/60 font-geist">
                   Then roll ₹{d.min_payment.toLocaleString()} into the next step.
                 </p>
