@@ -11,17 +11,11 @@ interface Debt {
   min_payment: number;
 }
 
-type Strategy = "snowball" | "avalanche";
-
-const normalizeStrategy = (s: string): Strategy =>
-  s === "avalanche" || s === "snowball" ? s : s === "avalance" ? "avalanche" : "snowball";
 
 const YourPlan = () => {
   const navigate = useNavigate();
   const [debts, setDebts] = useState<Debt[]>([]);
   const [loading, setLoading] = useState(true);
-  const [strategy, _setStrategy] = useState<Strategy>("snowball");
-  const setStrategy = (s: string | Strategy) => _setStrategy(normalizeStrategy(String(s)));
   const [quickWins, setQuickWins] = useState({
     freezeSpend: false,
     autoAdd: false,
@@ -77,10 +71,6 @@ const YourPlan = () => {
     })();
   }, [navigate]);
 
-  // Badge logger for strategy changes
-  useEffect(() => {
-    console.log("🎯 Strategy changed to:", strategy);
-  }, [strategy]);
 
   // Sanitize helper
   const toNum = (v: any) => {
@@ -112,21 +102,8 @@ const YourPlan = () => {
   const totalMonthly = normalizedDebts.reduce((sum, d) => sum + d.min_payment, 0);
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
 
-  // Deterministic comparators (with tie-breakers)
-  const cmpSnowball = (a: any, b: any) =>
-    (a.balance - b.balance) ||
-    (b.interest_rate - a.interest_rate) ||
-    a.lender_name.localeCompare(b.lender_name);
-
-  const cmpAvalanche = (a: any, b: any) =>
-    (b.interest_rate - a.interest_rate) ||
-    (b.balance - a.balance) ||
-    a.lender_name.localeCompare(b.lender_name);
-
-  // Build the sorted list fresh (no memo)
-  const sortedDebts = strategy === "snowball"
-    ? [...normalizedDebts].sort((a, b) => a.balance - b.balance)
-    : [...normalizedDebts].sort((a, b) => b.interest_rate - a.interest_rate || b.balance - a.balance);
+  // Sort debts by ascending balance (Snowball method)
+  const sortedDebts = [...normalizedDebts].sort((a, b) => a.balance - b.balance);
 
   const handleConsolidationClick = async () => {
     const email = window.localStorage.getItem("rr_email");
@@ -236,41 +213,17 @@ const YourPlan = () => {
           </div>
         </div>
 
-        {/* Strategy tabs */}
+        {/* Debt payoff plan */}
         <div className="border-gradient before:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-6">
-          {/* Debug badge */}
-          <div id="rr-strategy-badge" className="inline-block bg-orange-500/20 text-orange-300 text-xs px-3 py-1 rounded-full font-geist">
-            Current mode: {strategy}
-          </div>
+          <h2 className="text-white font-geist font-semibold text-xl tracking-tighter">
+            Your debt payoff plan
+          </h2>
+          <p className="text-white/60 font-geist text-sm">
+            Smallest balance first — pay minimums on everything, then attack the smallest debt with any extra cash.
+          </p>
 
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setStrategy("snowball")}
-              className={`px-3 py-2 rounded-lg font-geist text-sm transition ${
-                strategy === "snowball"
-                  ? "bg-white/10 text-white"
-                  : "bg-transparent border border-white/10 text-white/70"
-              }`}
-            >
-              Snowball
-            </button>
-            <button
-              type="button"
-              onClick={() => setStrategy("avalanche")}
-              className={`px-3 py-2 rounded-lg font-geist text-sm transition ${
-                strategy === "avalanche"
-                  ? "bg-white/10 text-white"
-                  : "bg-transparent border border-white/10 text-white/70"
-              }`}
-            >
-              Avalanche
-            </button>
-          </div>
-
-          {/* Render strictly as a vertical list, and HARD-remount when strategy changes */}
           <div className="flex flex-col">
-            <ol key={`list-${strategy}`} className="space-y-4">
+            <ol className="space-y-4">
               {sortedDebts.map((d, i) => (
                 <li
                   key={d.key}
@@ -281,11 +234,10 @@ const YourPlan = () => {
                       Step {i + 1}: Focus {d.lender_name}
                     </p>
                     <span className="text-xs text-white/60 font-geist">
-                      {strategy === "snowball" ? "Smallest balance first" : "Highest APR first"}
+                      Smallest balance first
                     </span>
                   </div>
 
-                  {/* On-screen debug badges so you SEE the sort keys */}
                   <div className="mt-2 flex gap-2 text-[11px] text-white/70 font-geist">
                     <span className="inline-block bg-white/10 rounded px-2 py-0.5">Balance: ₹{d.balance.toLocaleString()}</span>
                     <span className="inline-block bg-white/10 rounded px-2 py-0.5">APR: {d.interest_rate}%</span>
