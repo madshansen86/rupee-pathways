@@ -7,7 +7,7 @@ import { toast } from "sonner";
 interface Debt {
   lenderName: string;
   balance: string;
-  interestRate: string;
+  rate: string;
   minPayment: string;
 }
 
@@ -16,14 +16,14 @@ const DebtPlan = () => {
   const navigate = useNavigate();
   const [numDebts, setNumDebts] = useState<number>(1);
   const [debts, setDebts] = useState<Debt[]>([]);
-  const [monthlyBudget, setMonthlyBudget] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Helper to get email from localStorage or URL
-  const getEmail = () => {
-    const urlEmail = searchParams.get("email");
-    const savedEmail = window.localStorage.getItem("rr_email");
-    return urlEmail || savedEmail || "";
+  const getUserEmail = () => {
+    if (typeof window === "undefined") return "";
+    const fromLS = window.localStorage.getItem("rr_email");
+    const fromUrl = new URLSearchParams(window.location.search).get("email");
+    return (fromLS || fromUrl || "").trim().toLowerCase();
   };
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const DebtPlan = () => {
         setDebts(Array.from({ length: count }, () => ({
           lenderName: "",
           balance: "",
-          interestRate: "",
+          rate: "",
           minPayment: ""
         })));
       }
@@ -58,43 +58,39 @@ const DebtPlan = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveDebts = async () => {
     setIsSubmitting(true);
-
     try {
-      const userEmail = getEmail();
-      
-      if (!userEmail) {
-        toast.error("We need your email to build your plan");
+      const email = getUserEmail();
+      if (!email) {
+        toast.error("We need your email to build your plan. Please start on the first step so we can link your plan.");
         navigate("/start");
-        setIsSubmitting(false);
         return;
       }
-
-      const debtRecords = debts.map((debt, index) => ({
-        user_email: userEmail,
-        debt_index: index + 1,
-        lender_name: debt.lenderName,
-        balance: parseFloat(debt.balance) || 0,
-        interest_rate: parseFloat(debt.interestRate) || 0,
-        min_payment: parseFloat(debt.minPayment) || 0
-      }));
-
-      const { error } = await supabase
-        .from("debts")
-        .insert(debtRecords);
-
-      if (error) {
-        console.error("Supabase error:", error);
-        toast.error("Failed to save your plan. Please try again.");
-      } else {
-        toast.success("Plan saved!");
-        navigate(`/your-plan?email=${encodeURIComponent(userEmail)}`);
+      const cleaned = debts
+        .map((d, i) => ({
+          user_email: email,
+          debt_index: i + 1,
+          lender_name: (d.lenderName || "").trim() || null,
+          balance: d.balance !== "" ? Number(d.balance) : null,
+          interest_rate: d.rate !== "" ? Number(d.rate) : null,
+          min_payment: d.minPayment !== "" ? Number(d.minPayment) : null,
+        }))
+        .filter((row) => row.lender_name || row.balance || row.interest_rate || row.min_payment);
+      if (!cleaned.length) {
+        toast.error("Add at least one debt. Please fill one debt card before generating your plan.");
+        return;
       }
-    } catch (err) {
-      console.error("Error:", err);
-      toast.error("Something went wrong. Please try again.");
+      const { error } = await supabase.from("debts").insert(cleaned);
+      if (error) {
+        console.error("[Supabase insert error]", error);
+        toast.error(`Failed to save your plan: ${error.message || "Please try again."}`);
+        return;
+      }
+      navigate(`/your-plan?email=${encodeURIComponent(email)}`);
+    } catch (e: any) {
+      console.error("[handleSaveDebts exception]", e);
+      toast.error(`Unexpected error: ${e?.message || "Please try again."}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -184,7 +180,7 @@ const DebtPlan = () => {
             <div className="mt-12 rounded-[28px] bg-neutral-900/50 backdrop-blur-xl shadow-[0_20px_120px_-20px_rgba(0,0,0,0.7)] border border-white/5 border-gradient before:rounded-[28px] p-6 sm:p-8 [animation:fadeSlideIn_0.5s_ease-in-out_0.3s_both]">
               <h2 className="text-xl font-semibold text-white mb-6">Just a couple more questions about your debts</h2>
 
-              <form className="space-y-6" onSubmit={handleSubmit}>
+              <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSaveDebts(); }}>
                 {/* Dynamic debt cards */}
                 {Array.from({ length: numDebts }, (_, i) => i).map((idx) => (
                   <div
@@ -221,8 +217,8 @@ const DebtPlan = () => {
                           type="number"
                           step="0.01"
                           placeholder="e.g., 18.5"
-                          value={debts[idx]?.interestRate || ""}
-                          onChange={(e) => updateDebt(idx, "interestRate", e.target.value)}
+                          value={debts[idx]?.rate || ""}
+                          onChange={(e) => updateDebt(idx, "rate", e.target.value)}
                           required
                           className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
                         />
@@ -241,27 +237,6 @@ const DebtPlan = () => {
                     </div>
                   </div>
                 ))}
-
-                {/* Monthly budget */}
-                <div className="rounded-xl bg-white/5 backdrop-blur-sm p-5 border border-white/10">
-                  <h3 className="text-sm font-medium text-white mb-4">Your budget</h3>
-                  <div>
-                    <label className="block text-xs text-white/60 mb-2">
-                      How much can you pay toward debts each month? (₹)
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g., 15000"
-                      value={monthlyBudget}
-                      onChange={(e) => setMonthlyBudget(e.target.value)}
-                      required
-                      className="w-full rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-orange-300/60"
-                    />
-                    <p className="mt-2 text-xs text-white/50">
-                      This should cover all minimum payments plus extra.
-                    </p>
-                  </div>
-                </div>
 
                 {/* Submit */}
                 <button 

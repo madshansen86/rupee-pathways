@@ -15,7 +15,6 @@ const YourPlan = () => {
   const [debts, setDebts] = useState<Debt[]>([]);
   const [loading, setLoading] = useState(true);
   const [strategy, setStrategy] = useState<"snowball" | "avalanche">("snowball");
-  const [extraMonthly, setExtraMonthly] = useState(0);
   const [quickWins, setQuickWins] = useState({
     freezeSpend: false,
     autoAdd: false,
@@ -65,10 +64,6 @@ const YourPlan = () => {
   const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
   const totalMonthly = debts.reduce((sum, d) => sum + d.min_payment, 0);
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
-  const monthsWithExtra = Math.ceil(
-    totalDebt / Math.max(totalMonthly + extraMonthly, 1)
-  );
-  const monthsSaved = months - monthsWithExtra;
 
   const sortedDebts =
     strategy === "snowball"
@@ -244,36 +239,6 @@ const YourPlan = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Budget alignment */}
-        <div className="border-gradient before:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
-          <h2 className="text-white font-geist font-semibold text-xl tracking-tighter">
-            Budget alignment
-          </h2>
-          <div className="space-y-3">
-            <label htmlFor="extraMonthly" className="block text-white/60 font-geist text-sm">
-              Can you add extra each month?
-            </label>
-            <input
-              id="extraMonthly"
-              type="number"
-              min="0"
-              value={extraMonthly}
-              onChange={(e) => setExtraMonthly(parseInt(e.target.value) || 0)}
-              className="w-full rounded-lg bg-white/5 border border-white/20 text-white text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-orange-300/60"
-              placeholder="0"
-            />
-            {extraMonthly > 0 && (
-              <p className="text-white font-geist text-sm">
-                With ₹{extraMonthly.toLocaleString("en-IN")} extra/mo, you'll be debt-free in{" "}
-                <span className="font-bold text-orange-400">{monthsWithExtra} months</span>
-                {monthsSaved > 0 && (
-                  <span className="text-white/60"> (saves {monthsSaved} months!)</span>
-                )}
-              </p>
-            )}
           </div>
         </div>
 
