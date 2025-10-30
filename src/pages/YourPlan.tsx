@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
@@ -71,14 +71,26 @@ const YourPlan = () => {
     })();
   }, [navigate]);
 
-  const totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
-  const totalMonthly = debts.reduce((sum, d) => sum + d.min_payment, 0);
+  const normalizedDebts = useMemo(() => {
+    return debts.map((d: any) => ({
+      lender_name: d.lender_name,
+      balance: Number(d.balance) || 0,
+      interest_rate: Number(d.interest_rate || d.interestRate) || 0,
+      min_payment: Number(d.min_payment) || 0,
+    }));
+  }, [debts]);
+
+  const totalDebt = normalizedDebts.reduce((sum, d) => sum + d.balance, 0);
+  const totalMonthly = normalizedDebts.reduce((sum, d) => sum + d.min_payment, 0);
   const months = Math.ceil(totalDebt / Math.max(totalMonthly, 1));
 
-  const sortedDebts =
-    strategy === "snowball"
-      ? [...debts].sort((a, b) => a.balance - b.balance)
-      : [...debts].sort((a, b) => b.interest_rate - a.interest_rate);
+  const sortedDebts = useMemo(() => {
+    return [...normalizedDebts].sort((a, b) =>
+      strategy === "snowball"
+        ? a.balance - b.balance
+        : b.interest_rate - a.interest_rate
+    );
+  }, [normalizedDebts, strategy]);
 
   const handleConsolidationClick = async () => {
     const email = window.localStorage.getItem("rr_email");
@@ -192,6 +204,7 @@ const YourPlan = () => {
         <div className="border-gradient before:rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-6">
           <div className="flex items-center gap-4">
             <button
+              type="button"
               onClick={() => setStrategy("snowball")}
               className={`px-4 py-2 rounded-lg font-geist text-sm transition-colors ${
                 strategy === "snowball"
@@ -202,6 +215,7 @@ const YourPlan = () => {
               Snowball (fast wins)
             </button>
             <button
+              type="button"
               onClick={() => setStrategy("avalanche")}
               className={`px-4 py-2 rounded-lg font-geist text-sm transition-colors ${
                 strategy === "avalanche"
