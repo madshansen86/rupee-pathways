@@ -37,6 +37,6 @@ jobs:
     protocol: ftps
     port: 21
     local-dir: dist/
-    server-dir: /home/u651195882/domains/rupeerebel.com/public_html/
+    server-dir: public_html/
     dangerous-clean-slate: true
 
