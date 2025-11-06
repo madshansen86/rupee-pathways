@@ -1,38 +1,29 @@
 name: Build & Deploy to Hostinger
-
 on:
   push:
-    branches: [ main ]
-
+    branches: [main]
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
       - name: Install deps
         run: npm ci
-
       - name: Build
         run: npm run build
-
       - name: Show build output
         run: |
           echo "---- dist tree ----"
           ls -lah dist || (echo "dist folder missing" && exit 1)
           echo "---- dist/assets ----"
           ls -lah dist/assets || echo "no assets folder (may be fine)"
-
-
-       - name: Deploy via FTP
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -41,6 +32,6 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: dist/
-          server-dir: /public_html/     # <— key change
+          server-dir: ./
           dangerous-clean-slate: true
           log-level: verbose
