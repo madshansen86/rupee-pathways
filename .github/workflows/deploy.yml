@@ -32,7 +32,7 @@ jobs:
           ls -lah dist/assets || echo "no assets folder (may be fine)"
 
 
-      - name: Deploy via FTP
+       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -41,5 +41,6 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: dist/
-          server-dir: ./
+          server-dir: /public_html/     # <— key change
           dangerous-clean-slate: true
+          log-level: verbose
