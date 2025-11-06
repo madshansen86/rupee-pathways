@@ -7,7 +7,6 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,16 +23,22 @@ jobs:
       - name: Build
         run: npm run build
 
-     - name: Deploy via FTP
+      - name: Show build output
+        run: |
+          echo "---- dist tree ----"
+          ls -lah dist || (echo "dist folder missing" && exit 1)
+          echo "---- dist/assets ----"
+          ls -lah dist/assets || echo "no assets folder (may be fine)"
+
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-    server: ${{ secrets.FTP_SERVER }}      # 193.203.185.184
-    username: ${{ secrets.FTP_USERNAME }}  # u651195882
-    password: ${{ secrets.FTP_PASSWORD }}
-    protocol: ftp
-    port: 21
-    local-dir: dist/                       # built files
-    server-dir: /public_html/              # <<< key change
-    dangerous-clean-slate: false
-    log-level: verbose
-
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: dist/
+          server-dir: /public_html/
+          dangerous-clean-slate: false
+          log-level: verbose
