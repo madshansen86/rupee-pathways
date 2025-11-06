@@ -24,6 +24,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Show build output
+        run: |
+          echo "---- dist tree ----"
+          ls -lah dist || (echo "dist folder missing" && exit 1)
+          echo "---- dist/assets ----"
+          ls -lah dist/assets || echo "no assets folder (may be fine)"
+
+
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
