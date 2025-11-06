@@ -29,13 +29,14 @@ jobs:
         #   VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: dist/
-          server-dir: ${{ secrets.FTP_DEST }}   # usually /public_html
-          dangerous-clean-slate: true
+  uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+  with:
+    server: ${{ secrets.FTP_SERVER }}
+    username: ${{ secrets.FTP_USERNAME }}
+    password: ${{ secrets.FTP_PASSWORD }}
+    protocol: ftps
+    port: 21
+    local-dir: dist/                 
+    server-dir: ${{ secrets.FTP_DEST }}/   
+    dangerous-clean-slate: true
+
