@@ -31,18 +31,19 @@ jobs:
           ls -lah dist/assets || echo "no assets folder (may be fine)"
 
       - name: Debug FTP listing
+        shell: bash
         run: |
           echo "== Root listing =="
           curl --silent --ftp-ssl --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/" || true
-          echo ""
+          echo
           echo "== /public_html listing =="
           curl --silent --ftp-ssl --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/public_html/" || true
 
-            - name: Deploy via FTP
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}      # 193.203.185.184
-          username: ${{ secrets.FTP_USERNAME }}  # u651195882
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
@@ -52,6 +53,7 @@ jobs:
           log-level: verbose
 
       - name: Drop marker file
+        shell: bash
         run: |
           echo "deployed $(date -u)" > marker.txt
           curl --ftp-ssl --ftp-method nocwd --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" -T marker.txt "ftp://${{ secrets.FTP_SERVER }}/public_html/marker.txt"
