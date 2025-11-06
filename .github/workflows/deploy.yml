@@ -23,19 +23,15 @@ jobs:
 
       - name: Build
         run: npm run build
-        # If you use Vite env vars, uncomment and set secrets:
-        # env:
-        #   VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-        #   VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-    - name: Deploy via FTP
-  uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-  with:
-    server: ${{ secrets.FTP_SERVER }}
-    username: ${{ secrets.FTP_USERNAME }}
-    password: ${{ secrets.FTP_PASSWORD }}
-    protocol: ftps
-    port: 21
-    local-dir: dist/
-    server-dir: ./
-    dangerous-clean-slate: true
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: dist/
+          server-dir: ./
+          dangerous-clean-slate: true
