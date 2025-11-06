@@ -23,22 +23,30 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Show build output
+            - name: Show build output
         run: |
           echo "---- dist tree ----"
           ls -lah dist || (echo "dist folder missing" && exit 1)
           echo "---- dist/assets ----"
           ls -lah dist/assets || echo "no assets folder (may be fine)"
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: dist/
-          server-dir: /public_html/
-          dangerous-clean-slate: false
-          log-level: verbose
+      - name: Drop marker to multiple paths (plain FTP)
+        shell: bash
+        run: |
+          set -e
+          echo "deployed $(date -u)" > marker.txt
+          echo "Trying ./marker.txt"
+          curl --fail --ftp-method nocwd --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            -T marker.txt "ftp://${{ secrets.FTP_SERVER }}/marker.txt" && echo "OK: ./marker.txt" || echo "NO: ./marker.txt"
+
+          echo "Trying /public_html/marker.txt"
+          curl --fail --ftp-method nocwd --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            -T marker.txt "ftp://${{ secrets.FTP_SERVER }}/public_html/marker.txt" && echo "OK: /public_html/marker.txt" || echo "NO: /public_html/marker.txt"
+
+          echo "Trying /domains/rupeerebel.com/public_html/marker.txt"
+          curl --fail --ftp-method nocwd --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            -T marker.txt "ftp://${{ secrets.FTP_SERVER }}/domains/rupeerebel.com/public_html/marker.txt" && echo "OK: /domains/rupeerebel.com/public_html/marker.txt" || echo "NO: /domains/rupeerebel.com/public_html/marker.txt"
+
+          echo "Trying /home/u651195882/domains/rupeerebel.com/public_html/marker.txt"
+          curl --fail --ftp-method nocwd --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            -T marker.txt "ftp://${{ secrets.FTP_SERVER }}/home/u651195882/domains/rupeerebel.com/public_html/marker.txt" && echo "OK: /home/u651195882/domains/rupeerebel.com/public_html/marker.txt" || echo "NO: /home/u651195882/domains/rupeerebel.com/public_html/marker.txt"
